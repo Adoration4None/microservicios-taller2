@@ -9,5 +9,5 @@ RUN npm install
 
 EXPOSE 3000
 
-CMD node api.js
+CMD node src/api.js
 

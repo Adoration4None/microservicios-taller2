@@ -3,7 +3,7 @@ version: '3.8'
 services:
   database:
     build: 
-      context: .
+      context: ./api/src/database/
       dockerfile: Dockerfile
     restart: always
     ports: 
