@@ -63,10 +63,6 @@ const updateUser = async (idUser, newUser) => {
         return null
     }
 
-    if( await emailExists(newUser.email) || await dniExists(newUser.dni) ) {
-        return null
-    }
-
     const query = `UPDATE users
     SET name = '${newUser.name}', 
     dni = '${newUser.dni}',  
