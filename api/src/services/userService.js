@@ -1,7 +1,11 @@
 const User = require('../database/User')
 
-const getAllUsers = () => {
-    return User.getAllUsers()
+const getAllUsers = (limit, offset) => {
+    return User.getAllUsers(limit, offset)
+}
+
+const getTotalUsers = () => {
+    return User.getTotalUsers()
 }
 
 const getUser = (idUser) => {
@@ -22,6 +26,7 @@ const deleteUser = (idUser) => {
 
 module.exports = {
     getAllUsers,
+    getTotalUsers,
     getUser,
     registerUser,
     updateUser,

@@ -14,11 +14,19 @@ const pool = mysql2.createPool({
     password: dbPassword
 })
 
-const getAllUsers = async () => {
-    const query = 'SELECT id,name,dni,email FROM users'
+const getAllUsers = async (limit, offset) => {
+    const query = `SELECT id,name,dni,email FROM users LIMIT ${limit} OFFSET ${offset}`
     const result = await pool.query(query)
     return result[0]
 }
+
+const getTotalUsers = async () => {
+    const query = `SELECT COUNT(id) as total FROM users`
+    const result = await pool.query(query)
+
+    return parseInt(result[0][0].total)
+}
+
 
 const getUser = async (idUser) => {
     const query = `SELECT name,dni,email FROM users WHERE id=${idUser}`
@@ -96,6 +104,7 @@ const deleteUser = async (idUser) => {
 
 module.exports = {
     getAllUsers,
+    getTotalUsers,
     getUser,
     registerUser,
     updateUser,

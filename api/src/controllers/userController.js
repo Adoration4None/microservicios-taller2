@@ -1,14 +1,43 @@
 const userService = require('../services/userService')
 
+// // Metodo anterior
+// const getAllUsers = (req, res) => {
+//     const allUsers = userService.getAllUsers()
+//         .then(allUsers => {
+//             res.status(200).send({ status: 'OK', data: allUsers })
+//         })
+//         .catch(error => {
+//             console.log('Error: ', error)
+//             res.status(500).send({ status: 'Error', message: 'Error getting the users list' })
+//         }) 
+// }
+
 const getAllUsers = (req, res) => {
-    const allUsers = userService.getAllUsers()
-        .then(allUsers => {
-            res.status(200).send({ status: 'OK', data: allUsers })
+    const page  = parseInt(req.query.page)  || 1
+    const limit = parseInt(req.query.limit) || 5
+    const offset = (page - 1) * limit
+
+    const totalResults = userService.getTotalUsers().then(totalResults => {
+        const totalPages = Math.ceil(totalResults / limit)
+
+        const allUsers = userService.getAllUsers(limit, offset)
+            .then(allUsers => {
+                res.status(200).send({ 
+                    status: 'OK',
+                    data: allUsers,
+                    page: page,
+                    limit: limit,
+                    total: totalResults,
+                    totalPages: totalPages
+                })
+            })
+            .catch(error => {
+                console.log('Error: ', error)
+                res.status(500).send({ status: 'Error', message: 'Error getting the users list' })
+            }) 
         })
-        .catch(error => {
-            console.log('Error: ', error)
-            res.status(500).send({ status: 'Error', message: 'Error getting the users list' })
-        }) 
+
+    
 }
 
 
