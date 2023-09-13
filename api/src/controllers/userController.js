@@ -85,6 +85,32 @@ const registerUser = (req, res) => {
 }
 
 
+const login = (req, res) =>{
+    const { body } = req
+
+    if(!body.email || !body.password) {
+        res.status(400).send({ status: 'Error', message: 'Missing required fields' })
+        return
+    }
+
+    const loginData = {
+        email:    body.email,
+        password: body.password
+    }
+
+    const loggedUser = userService.login(loginData)
+        .then(loggedUser => {
+            if(loggedUser == null)
+                res.status(404).send({ status: 'Error', message: 'User not found: Wrong login data' })
+            else res.status(200).send({ status: 'OK', data: loggedUser })
+        })
+        .catch(error => {
+            console.log('Error: ', error)
+            res.status(500).send({ status: 'Error', message: 'Error logging in' })
+        }) 
+}
+
+
 const updateUser = (req, res) => {
     const {
         body,
@@ -139,6 +165,7 @@ module.exports = {
     getAllUsers,
     getUser,
     registerUser,
+    login,
     updateUser,
     deleteUser
 }

@@ -14,11 +14,13 @@ const pool = mysql2.createPool({
     password: dbPassword
 })
 
+
 const getAllUsers = async (limit, offset) => {
     const query = `SELECT id,name,dni,email FROM users LIMIT ${limit} OFFSET ${offset}`
     const result = await pool.query(query)
     return result[0]
 }
+
 
 const getTotalUsers = async () => {
     const query = `SELECT COUNT(id) as total FROM users`
@@ -34,6 +36,7 @@ const getUser = async (idUser) => {
 
     return result[0].length > 0 ? result[0] : null
 }
+
 
 const registerUser = async (newUser) => {
     if( await emailExists(newUser.email) || await dniExists(newUser.dni) ) {
@@ -52,11 +55,32 @@ const registerUser = async (newUser) => {
     }
 }
 
+
+const login = async (loginData) => {
+    if( !(await emailExists(loginData.email)) ) {
+        return null
+    }
+
+    if( await wrongPassword(loginData.password) ){
+        return null
+    }
+
+    return 'inicio de sesión exitoso :)'
+}
+
+
 async function emailExists(email) {
     const query = `SELECT id,name FROM users WHERE email='${email}'`
     const result = await pool.query(query)
 
     return result[0].length > 0
+}
+
+async function wrongPassword(password) {
+    const query = `SELECT id,name FROM users WHERE password='${password}'`
+    const result = await pool.query(query)
+
+    return result[0].length == 0
 }
 
 async function dniExists(dni) {
@@ -65,6 +89,7 @@ async function dniExists(dni) {
 
     return result[0].length > 0
 }
+
 
 const updateUser = async (idUser, newUser) => {
     if( getUser(idUser) == null ) {
@@ -87,6 +112,7 @@ const updateUser = async (idUser, newUser) => {
     }
 }
 
+
 const deleteUser = async (idUser) => {
     if( getUser(idUser) == null ) {
         return false
@@ -102,11 +128,13 @@ const deleteUser = async (idUser) => {
     }
 }
 
+
 module.exports = {
     getAllUsers,
     getTotalUsers,
     getUser,
     registerUser,
+    login,
     updateUser,
     deleteUser
 }

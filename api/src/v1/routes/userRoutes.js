@@ -8,6 +8,7 @@ router
     .get('/?page=:page&limit=:limit', userController.getAllUsers)
     .get('/:userId', userController.getUser)
     .post('/', userController.registerUser)
+    .post('/login', userController.login)
     .patch('/:userId', userController.updateUser)
     .delete('/:userId', userController.deleteUser)
 

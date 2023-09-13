@@ -16,6 +16,10 @@ const registerUser = (newUser) => {
     return User.registerUser(newUser)
 }
 
+const login = (loginData) => {
+    return User.login(loginData)
+}
+
 const updateUser = (idUser, newUser) => {
     return User.updateUser(idUser, newUser)
 }
@@ -29,6 +33,7 @@ module.exports = {
     getTotalUsers,
     getUser,
     registerUser,
+    login,
     updateUser,
     deleteUser
 }
