@@ -1,4 +1,5 @@
-const mysql2 = require('mysql2/promise')
+const mysql2     = require('mysql2/promise')
+const jwtManager = require('../security/jwtManager')
 
 const host       = process.env.HOST        || '172.17.0.2'
 const db         = process.env.DB_NAME     || 'users'
@@ -65,7 +66,12 @@ const login = async (loginData) => {
         return null
     }
 
-    return 'inicio de sesión exitoso :)'
+    let loggedUser = await findUserByEmail(loginData.email)
+    loggedUser = loggedUser[0]
+    
+    const token = jwtManager.generateAccessToken(loggedUser.id, loggedUser.name, loggedUser.dni)
+
+    return token
 }
 
 
@@ -88,6 +94,13 @@ async function dniExists(dni) {
     const result = await pool.query(query)
 
     return result[0].length > 0
+}
+
+async function findUserByEmail(email) {
+    const query = `SELECT id,name,dni FROM users WHERE email='${email}'`
+    const result = await pool.query(query)
+
+    return result[0]
 }
 
 

@@ -1,20 +1,10 @@
 const userService = require('../services/userService')
+const jwt = require('jsonwebtoken')
 
-// // Metodo anterior
-// const getAllUsers = (req, res) => {
-//     const allUsers = userService.getAllUsers()
-//         .then(allUsers => {
-//             res.status(200).send({ status: 'OK', data: allUsers })
-//         })
-//         .catch(error => {
-//             console.log('Error: ', error)
-//             res.status(500).send({ status: 'Error', message: 'Error getting the users list' })
-//         }) 
-// }
 
 const getAllUsers = (req, res) => {
     const page  = parseInt(req.query.page)  || 1
-    const limit = parseInt(req.query.limit) || 5
+    const limit = parseInt(req.query.limit) || 10
     const offset = (page - 1) * limit
 
     const totalResults = userService.getTotalUsers().then(totalResults => {
@@ -36,8 +26,6 @@ const getAllUsers = (req, res) => {
                 res.status(500).send({ status: 'Error', message: 'Error getting the users list' })
             }) 
         })
-
-    
 }
 
 
@@ -98,11 +86,17 @@ const login = (req, res) =>{
         password: body.password
     }
 
-    const loggedUser = userService.login(loginData)
-        .then(loggedUser => {
-            if(loggedUser == null)
+    const accessToken = userService.login(loginData)
+        .then(accessToken => {
+            if(accessToken == null)
                 res.status(404).send({ status: 'Error', message: 'User not found: Wrong login data' })
-            else res.status(200).send({ status: 'OK', data: loggedUser })
+            else {
+                res
+                    .status(200)
+                    .header('authorization', accessToken)
+                    // .cookie('token', loggedUser, {httpOnly: true, secure: true})
+                    .send({ status: 'OK', message: 'User successfully logged in', token: accessToken })
+            } 
         })
         .catch(error => {
             console.log('Error: ', error)
@@ -144,6 +138,40 @@ const updateUser = (req, res) => {
 }
 
 
+const updatePassword = (req, res) => {
+    const token = req.cookies.token
+    const { body } = req
+
+    if(!token) {
+        res.status(401).send({ status: 'Error', message: 'Missing token: Failed authentication' })
+        return
+    }
+
+    const decoded = jwt.verify(token, secret)
+    req.user = decoded
+
+    const newUser = {
+        name:     req.user.name,
+        dni:      req.user.dni,
+        email:    body.email,
+        password: body.password
+    }
+      
+    const updatedUser = userService.updateUser(req.user.id, newUser)
+        .then(updatedUser => {
+            if(updatedUser == null) {
+                res.status(500).send({ status: 'Error', message: 'Error updating the user' })
+                return
+            }
+            else res.status(200).send({ status: 'OK' })
+        })
+        .catch(error => {
+            console.log('Error: ', error)
+            res.status(500).send({ status: 'Error', message: 'Error updating the user' })
+        }) 
+}
+
+
 const deleteUser = (req, res) => {
     const deleted = userService.deleteUser(req.params.userId)
         .then(deleted => {
@@ -167,5 +195,6 @@ module.exports = {
     registerUser,
     login,
     updateUser,
+    updatePassword,
     deleteUser
 }

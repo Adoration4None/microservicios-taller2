@@ -10,6 +10,7 @@ router
     .post('/', userController.registerUser)
     .post('/login', userController.login)
     .patch('/:userId', userController.updateUser)
+    .patch('/update-password', userController.updatePassword)
     .delete('/:userId', userController.deleteUser)
 
 module.exports = router
