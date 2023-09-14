@@ -94,7 +94,6 @@ const login = (req, res) =>{
                 res
                     .status(200)
                     .header('authorization', accessToken)
-                    // .cookie('token', loggedUser, {httpOnly: true, secure: true})
                     .send({ status: 'OK', message: 'User successfully logged in', token: accessToken })
             } 
         })
@@ -139,25 +138,14 @@ const updateUser = (req, res) => {
 
 
 const updatePassword = (req, res) => {
-    const token = req.cookies.token
     const { body } = req
 
-    if(!token) {
-        res.status(401).send({ status: 'Error', message: 'Missing token: Failed authentication' })
-        return
-    }
-
-    const decoded = jwt.verify(token, secret)
-    req.user = decoded
-
-    const newUser = {
-        name:     req.user.name,
-        dni:      req.user.dni,
+    const userData = {
         email:    body.email,
-        password: body.password
+        password: body.password,
     }
       
-    const updatedUser = userService.updateUser(req.user.id, newUser)
+    const updatedUser = userService.updatePassword(userData, body.newPassword)
         .then(updatedUser => {
             if(updatedUser == null) {
                 res.status(500).send({ status: 'Error', message: 'Error updating the user' })

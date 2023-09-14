@@ -106,6 +106,7 @@ async function findUserByEmail(email) {
 
 const updateUser = async (idUser, newUser) => {
     if( getUser(idUser) == null ) {
+        console.log('Error: User not found')
         return null
     }
 
@@ -126,8 +127,39 @@ const updateUser = async (idUser, newUser) => {
 }
 
 
+function areDifferent(dbUser, user) {
+    console.log('DBUser: ', dbUser.name, ', ', dbUser.dni)
+    console.log('User: ', user.name, ', ', user.dni)
+    console.log('Validaciones: ', dbUser.name != user.name, dbUser.dni != user.dni )
+    return dbUser.name != user.name && dbUser.dni != user.dni
+}
+
+
+const updatePassword = async (userData, newPassword) => {
+    const email = userData.email
+    const password = userData.password
+
+    if( !(await emailExists(email)) ) {
+        console.log(`Error: User with email ${email} not found`)
+        return null
+    }
+    
+    const query = `UPDATE users
+    SET password = '${newPassword}' WHERE email='${email}' AND password='${password}';`
+
+    try {
+        const result = await pool.query(query)
+        return result[0]
+    } catch (error) {
+        console.error('Error updating password in database: ', error)
+        throw error
+    }
+} 
+
+
 const deleteUser = async (idUser) => {
     if( getUser(idUser) == null ) {
+        console.log('Error: User not found')
         return false
     }
 
@@ -149,6 +181,7 @@ module.exports = {
     registerUser,
     login,
     updateUser,
+    updatePassword,
     deleteUser
 }
 

@@ -24,6 +24,10 @@ const updateUser = (idUser, newUser) => {
     return User.updateUser(idUser, newUser)
 }
 
+const updatePassword = (userData, newPassword) => {
+    return User.updatePassword(userData, newPassword)
+}
+
 const deleteUser = (idUser) => {
     return User.deleteUser(idUser)
 }
@@ -35,5 +39,6 @@ module.exports = {
     registerUser,
     login,
     updateUser,
+    updatePassword,
     deleteUser
 }
