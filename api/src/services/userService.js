@@ -12,6 +12,10 @@ const getUser = (idUser) => {
     return User.getUser(idUser)
 }
 
+const getResetPasswordToken = (email) => {
+    return User.getResetPasswordToken(email)
+}
+
 const registerUser = (newUser) => {
     return User.registerUser(newUser)
 }
@@ -24,8 +28,8 @@ const updateUser = (idUser, newUser) => {
     return User.updateUser(idUser, newUser)
 }
 
-const updatePassword = (userData, newPassword) => {
-    return User.updatePassword(userData, newPassword)
+const updatePassword = (email, newPassword) => {
+    return User.updatePassword(email, newPassword)
 }
 
 const deleteUser = (idUser) => {
@@ -36,6 +40,7 @@ module.exports = {
     getAllUsers,
     getTotalUsers,
     getUser,
+    getResetPasswordToken,
     registerUser,
     login,
     updateUser,

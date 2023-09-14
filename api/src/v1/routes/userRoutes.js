@@ -10,6 +10,7 @@ router
     .get('/:userId', userController.getUser)
     .post('/', userController.registerUser)
     .post('/login', userController.login)
+    .post('/forgot-password', userController.getResetPasswordToken)
     .put('/:userId', userController.updateUser)
     .patch('/update-password', jwtManager.validateToken, userController.updatePassword)
     .delete('/:userId', userController.deleteUser)

@@ -45,6 +45,32 @@ const getUser = (req, res) => {
 }
 
 
+const getResetPasswordToken = (req, res) => {
+    const { body } = req
+
+    if(!body.email) {
+        res.status(400).send({ status: 'Error', message: 'Missing required field: Email' })
+        return
+    }
+
+    const accessToken = userService.getResetPasswordToken(body.email)
+        .then(accessToken => {
+            if(accessToken == null)
+                res.status(404).send({ status: 'Error', message: 'User not found: Wrong data' })
+            else {
+                res
+                    .status(200)
+                    .header('authorization', accessToken)
+                    .send({ status: 'OK', message: 'You can now update your password', token: accessToken })
+            } 
+        })
+        .catch(error => {
+            console.log('Error: ', error)
+            res.status(500).send({ status: 'Error', message: 'Error generating access token' })
+        }) 
+}
+
+
 const registerUser = (req, res) => {
     const { body } = req
 
@@ -140,12 +166,12 @@ const updateUser = (req, res) => {
 const updatePassword = (req, res) => {
     const { body } = req
 
-    const userData = {
-        email:    body.email,
-        password: body.password,
+    if(!body.email) {
+        res.status(400).send({ status: 'Error', message: 'Missing required field: Email' })
+        return
     }
       
-    const updatedUser = userService.updatePassword(userData, body.newPassword)
+    const updatedUser = userService.updatePassword(body.email, body.newPassword)
         .then(updatedUser => {
             if(updatedUser == null) {
                 res.status(500).send({ status: 'Error', message: 'Error updating the user' })
@@ -180,6 +206,7 @@ const deleteUser = (req, res) => {
 module.exports = {
     getAllUsers,
     getUser,
+    getResetPasswordToken,
     registerUser,
     login,
     updateUser,

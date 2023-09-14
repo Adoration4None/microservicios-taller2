@@ -39,6 +39,20 @@ const getUser = async (idUser) => {
 }
 
 
+const getResetPasswordToken = async (email) => {
+    if( !(await emailExists(email)) ) {
+        return null
+    }
+
+    let loggedUser = await findUserByEmail(email)
+    loggedUser = loggedUser[0]
+    
+    const token = jwtManager.generateAccessToken(loggedUser.id, loggedUser.name, loggedUser.dni)
+
+    return token
+}
+
+
 const registerUser = async (newUser) => {
     if( await emailExists(newUser.email) || await dniExists(newUser.dni) ) {
         return null
@@ -127,25 +141,14 @@ const updateUser = async (idUser, newUser) => {
 }
 
 
-function areDifferent(dbUser, user) {
-    console.log('DBUser: ', dbUser.name, ', ', dbUser.dni)
-    console.log('User: ', user.name, ', ', user.dni)
-    console.log('Validaciones: ', dbUser.name != user.name, dbUser.dni != user.dni )
-    return dbUser.name != user.name && dbUser.dni != user.dni
-}
-
-
-const updatePassword = async (userData, newPassword) => {
-    const email = userData.email
-    const password = userData.password
-
+const updatePassword = async (email, newPassword) => {
     if( !(await emailExists(email)) ) {
         console.log(`Error: User with email ${email} not found`)
         return null
     }
     
     const query = `UPDATE users
-    SET password = '${newPassword}' WHERE email='${email}' AND password='${password}';`
+    SET password = '${newPassword}' WHERE email='${email}';`
 
     try {
         const result = await pool.query(query)
@@ -178,6 +181,7 @@ module.exports = {
     getAllUsers,
     getTotalUsers,
     getUser,
+    getResetPasswordToken,
     registerUser,
     login,
     updateUser,
