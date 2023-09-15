@@ -151,7 +151,7 @@ const updateUser = (req, res) => {
     const updatedUser = userService.updateUser(userId, newUser)
         .then(updatedUser => {
             if(updatedUser == null) {
-                res.status(500).send({ status: 'Error', message: 'Error updating the user' })
+                res.status(404).send({ status: 'Error', message: 'User not found' })
                 return
             }
             else res.status(200).send({ status: 'OK' })
@@ -174,14 +174,14 @@ const updatePassword = (req, res) => {
     const updatedUser = userService.updatePassword(body.email, body.newPassword)
         .then(updatedUser => {
             if(updatedUser == null) {
-                res.status(500).send({ status: 'Error', message: 'Error updating the user' })
+                res.status(500).send({ status: 'Error', message: 'Error updating the password' })
                 return
             }
             else res.status(200).send({ status: 'OK' })
         })
         .catch(error => {
             console.log('Error: ', error)
-            res.status(500).send({ status: 'Error', message: 'Error updating the user' })
+            res.status(500).send({ status: 'Error', message: 'Error updating the password' })
         }) 
 }
 
@@ -192,7 +192,7 @@ const deleteUser = (req, res) => {
             if(deleted)
                 res.status(200).send({ status: 'OK' })
             else {
-                res.status(500).send({ status: 'Error', message: 'Error deleting the user' })
+                res.status(404).send({ status: 'Error', message: 'User not found' })
                 return
             }
         })
