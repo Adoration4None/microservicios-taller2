@@ -3,7 +3,7 @@ version: '3.8'
 services:
   database:
     build: 
-      context: ./api/src/database/
+      context: ./users_api/src/database/
       dockerfile: Dockerfile
     restart: always
     ports: 
@@ -11,10 +11,11 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=123456
 
-  api:
+  users_api:
     build: 
-      context: ./api/
+      context: ./users_api/
       dockerfile: Dockerfile
+    restart: always
     depends_on:
       - database
     ports:
@@ -24,3 +25,14 @@ services:
     links:
       - database
 
+  test_server:
+    build: 
+      context: ./users_api/test-server/
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - users_api
+    ports:
+      - 8080:8080
+    links:
+      - users_api
