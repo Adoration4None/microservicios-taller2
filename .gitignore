@@ -1,2 +1,2 @@
-api/node_modules/
-api/.dockerignore
+node_modules/
+users_api/.dockerignore
