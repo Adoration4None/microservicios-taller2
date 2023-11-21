@@ -1,10 +1,13 @@
 'use strict';
 
+var cors = require('cors');
 var path = require('path');
 var http = require('http');
 
 var oas3Tools = require('oas3-tools');
 var serverPort = 8080;
+
+app.use(cors());
 
 // swaggerRouter configuration
 var options = {
